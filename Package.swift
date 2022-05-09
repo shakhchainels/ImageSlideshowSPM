@@ -25,7 +25,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "ImageSlideshow",
-            dependencies: ["Kingfisher"],
+            path: "Sources/ImageSlideshow",
             sources: [
                 "Classes/Core/ActivityIndicator.swift",
                 "Classes/Core/Bundle+Module.swift",
@@ -39,6 +39,7 @@ let package = Package(
                 "Classes/Core/UIImage+AspectFit.swift",
                 "Classes/Core/UIImageView+Tools.swift",
                 "Classes/Core/ZoomAnimatedTransitioning.swift",
+                "ImageSlideshowSPM.swift"
             ],
             resources: [
                 .copy("Assets/ic_cross_white@2x.png"),
@@ -48,9 +49,8 @@ let package = Package(
             name: "ImageSlideshowKingfisher",
             dependencies: ["ImageSlideshow", "Kingfisher"],
             path: "Sources/ImageSlideshow/Classes/InputSources",
-            sources: ["KingfisherSource.swift"]),
-        .testTarget(
-            name: "ImageSlideshowSPMTests",
-            dependencies: ["ImageSlideshow"])
+            sources: ["KingfisherSource.swift"])
     ]
 )
+
+///Users/Andre/Work/Development/SPM/ImageSlideshowSPM/Sources/ImageSlideshow/Classes/InputSources/KingfisherSource.swift
