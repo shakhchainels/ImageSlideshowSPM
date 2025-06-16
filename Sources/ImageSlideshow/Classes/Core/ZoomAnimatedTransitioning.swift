@@ -250,6 +250,7 @@ class ZoomInAnimator: ZoomAnimator, UIViewControllerAnimatedTransitioning {
     }
 }
 
+@MainActor
 class ZoomOutAnimator: ZoomAnimator, UIViewControllerAnimatedTransitioning {
 
     private var animatorForCurrentTransition: UIViewImplicitlyAnimating?
@@ -260,17 +261,23 @@ class ZoomOutAnimator: ZoomAnimator, UIViewControllerAnimatedTransitioning {
 
     @available(iOS 10.0, *)
     func interruptibleAnimator(using transitionContext: UIViewControllerContextTransitioning) -> UIViewImplicitlyAnimating {
-        // as per documentation, the same object should be returned for the ongoing transition
-        if let animatorForCurrentSession = animatorForCurrentTransition {
-            return animatorForCurrentSession
+        if let a = animatorForCurrentTransition { return a }
+
+        let (duration, animations, completion) = animationParams(using: transitionContext)
+
+        let animator = UIViewPropertyAnimator(duration: duration, curve: .linear) {
+            animations()
         }
 
-        let params = animationParams(using: transitionContext)
+        if #available(iOS 13.0, *) {
+            Task { @MainActor [weak self] in
+                let position = await animator.addCompletion()
+                completion(position)
+                self?.animatorForCurrentTransition = nil
+            }
+        }
 
-        let animator = UIViewPropertyAnimator(duration: params.0, curve: .linear, animations: params.1)
-        animator.addCompletion(params.2)
         animatorForCurrentTransition = animator
-
         return animator
     }
 
